@@ -1,6 +1,5 @@
 const config = require('../config').common.database;
 
-console.log(config.username, config.password, config.name, config.host, config.port);
 module.exports = {
   development: {
     username: config.username,
