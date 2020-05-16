@@ -10,8 +10,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     { timestamps: true, underscored: true, paranoid: true, tableName: 'games' }
   );
-  Game.associate = ({ User }) => {
+  Game.associate = ({ User, Cell }) => {
     Game.hasOne(User, { as: 'user', foreignKey: 'userId' });
+    Game.hasMany(Cell, { as: 'cells', foreignKey: 'gameId' });
   };
   return Game;
 };
