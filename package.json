@@ -14,7 +14,8 @@
     "prestart-dev": "npm run lint",
     "migrations": "sequelize db:migrate",
     "migrations-test": "NODE_ENV=testing sequelize db:migrate",
-    "start": "node server.js"
+    "start": "node server.js",
+    "create-migration": "npx sequelize migration:create --migrations-path ./migrations/migrations"
   },
   "cacheDirectories": [
     "node_modules"
