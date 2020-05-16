@@ -25,12 +25,38 @@ describe('POST /users', () => {
       expect(usersCreated.length).toBe(1);
     });
   });
-  describe('Fail for invalid request', () => {
+  describe('Fail for empty body', () => {
     let invalidParamsResponse = {};
     beforeAll(async () => {
       invalidParamsResponse = await getResponse({
         endpoint: '/users',
         method: 'post'
+      });
+    });
+    it('Should return status code 409', () => {
+      expect(invalidParamsResponse.statusCode).toEqual(409);
+    });
+    it('Should return internal_code invalid_params', () => {
+      expect(invalidParamsResponse.body.internal_code).toBe('invalid_params');
+    });
+    it('Should return an error indicating the provided email is not valid', () => {
+      expect(invalidParamsResponse.body.message).toContain(
+        'email must be string, not empty and must be contained in body'
+      );
+    });
+    it('Should return an error indicating the provided password is not valid', () => {
+      expect(invalidParamsResponse.body.message).toContain(
+        'password must be string, not empty and must be contained in body'
+      );
+    });
+  });
+  describe('Fail for empty strings in body', () => {
+    let invalidParamsResponse = {};
+    beforeAll(async () => {
+      invalidParamsResponse = await getResponse({
+        endpoint: '/users',
+        method: 'post',
+        body: { user: '', password: '' }
       });
     });
     it('Should return status code 409', () => {
