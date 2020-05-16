@@ -14,3 +14,6 @@ exports.internalServerError = message => internalError(message, exports.INTERNAL
 
 exports.ALREADY_EXIST_ERROR = 'already_exist';
 exports.alreadyExistError = message => internalError(message, exports.ALREADY_EXIST_ERROR);
+
+exports.INVALID_PARAMS = 'invalid_params';
+exports.invalidParams = message => internalError(message, exports.INVALID_PARAMS);
