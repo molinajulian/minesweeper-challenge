@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     { timestamps: true, underscored: true, paranoid: true, tableName: 'users' }
   );
-  User.associate = ({ List }) => {
-    User.hasMany(List, { as: 'games', foreignKey: 'userId' });
+  User.associate = ({ Game }) => {
+    User.hasMany(Game, { as: 'games', foreignKey: 'userId' });
   };
   return User;
 };
