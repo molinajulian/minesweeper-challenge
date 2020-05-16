@@ -4,7 +4,6 @@ const { databaseError, alreadyExistError } = require('../errors');
 
 exports.findCreateUser = userData => {
   logger.info('Attempting to create user with data', userData);
-  console.log(userData);
   return User.findOrCreate({ defaults: userData, where: { email: userData.email } })
     .catch(error => {
       logger.error('Error getting or createing user, reason:', error);
