@@ -37,8 +37,10 @@ const config = {
       port: process.env.PORT
     },
     session: {
-      header_name: 'authorization',
-      secret: process.env.NODE_API_SESSION_SECRET
+      header_name: 'authorization'
+    },
+    server: {
+      hashingSalts: process.env.HASHING_SALTS || 10
     }
   }
 };
