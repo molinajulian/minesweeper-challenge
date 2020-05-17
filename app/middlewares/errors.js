@@ -1,3 +1,5 @@
+const Datetime = require('luxon').DateTime;
+
 const errors = require('../errors');
 const logger = require('../logger');
 
@@ -8,7 +10,8 @@ const statusCodes = {
   [errors.DEFAULT_ERROR]: DEFAULT_STATUS_CODE,
   [errors.INTERNAL_SERVER_ERROR]: 500,
   [errors.ALREADY_EXIST_ERROR]: 400,
-  [errors.INVALID_PARAMS]: 409
+  [errors.INVALID_PARAMS]: 409,
+  [errors.NOT_FOUND]: 404
 };
 
 exports.handle = (error, req, res, next) => {
@@ -18,5 +21,9 @@ exports.handle = (error, req, res, next) => {
     res.status(DEFAULT_STATUS_CODE);
   }
   logger.error(error);
-  return res.send({ message: error.message, internal_code: error.internalCode });
+  return res.send({
+    message: error.message,
+    internal_code: error.internalCode,
+    timestamp: Datetime.local().toISO()
+  });
 };

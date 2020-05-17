@@ -1,6 +1,6 @@
 const { EMAIL, PASSWORD } = require('./errors_message');
 
-exports.createUserSchema = {
+const commonSchema = {
   email: {
     in: ['body'],
     isString: true,
@@ -11,3 +11,7 @@ exports.createUserSchema = {
   },
   password: { in: ['body'], isString: true, isLength: { options: { min: 1 } }, errorMessage: PASSWORD }
 };
+
+exports.singUpSchema = commonSchema;
+
+exports.signInSchema = commonSchema;

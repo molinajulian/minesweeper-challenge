@@ -16,4 +16,10 @@ exports.ALREADY_EXIST_ERROR = 'already_exist';
 exports.alreadyExistError = message => internalError(message, exports.ALREADY_EXIST_ERROR);
 
 exports.INVALID_PARAMS = 'invalid_params';
-exports.invalidParams = message => internalError(message, exports.INVALID_PARAMS);
+exports.invalidParamsError = message => internalError(message, exports.INVALID_PARAMS);
+
+exports.NOT_FOUND = 'not_found';
+exports.notFoundError = message => internalError(message, exports.NOT_FOUND);
+
+exports.INVALID_CREDENTIALS = 'invalid_credentials';
+exports.invalidCredentialsError = message => internalError(message, exports.INVALID_CREDENTIALS);
