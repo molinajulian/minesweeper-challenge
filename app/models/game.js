@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       height: { type: DataTypes.BIGINT, allowNull: false },
       width: { type: DataTypes.BIGINT, allowNull: false },
       minesAmount: { type: DataTypes.BIGINT, allowNull: false },
+      state: { type: DataTypes.STRING, allowNull: false },
       createdAt: { type: DataTypes.DATE, allowNull: false },
       updatedAt: { type: DataTypes.DATE, allowNull: false },
       deletedAt: DataTypes.DATE
