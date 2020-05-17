@@ -6,7 +6,7 @@ exports.findCreateUser = userData => {
   logger.info('Attempting to create user with data', userData);
   return User.findOrCreate({ defaults: userData, where: { email: userData.email } })
     .catch(error => {
-      logger.error('Error getting or createing user, reason:', error);
+      logger.error('Error getting or creating user, reason:', error);
       databaseError(error.message);
     })
     .then(([user, created]) => {
@@ -17,7 +17,7 @@ exports.findCreateUser = userData => {
 
 exports.findOneBy = userData => {
   logger.info(`Attempting to find user with email ${userData.email}`);
-  return User.findOne({ where: { email: userData.email } }).then(user => {
+  return User.findOne({ where: userData }).then(user => {
     if (!user) throw notFoundError('The provided user was not found');
     return user.dataValues;
   });
