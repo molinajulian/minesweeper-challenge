@@ -9,14 +9,16 @@
   "scripts": {
     "lint": "eslint \"**/*.js\" --ignore-pattern ./.eslintrc.js",
     "lint-fix": "npm run lint -- --fix",
-    "pretest": "npm run lint",
     "start-dev": "nodemon --inspect server.js",
-    "prestart-dev": "npm run lint",
     "migrations": "sequelize db:migrate",
     "migrations-test": "NODE_ENV=testing sequelize db:migrate",
     "start": "node server.js",
     "create-migration": "npx sequelize migration:create --migrations-path ./migrations/migrations",
-    "test": "NODE_ENV=testing jest --runInBand --detectOpenHandles --forceExit --colors"
+    "test": "NODE_ENV=testing jest --runInBand --detectOpenHandles --forceExit --colors",
+    "migrate-and-start": "npm run migrations && npm run start",
+    "migrate-and-test": "npm run migrations && npm run test",
+    "docker-up": "docker-compose up -d --build",
+    "docker-up-test": "docker-compose -f docker-compose-testing.yml up --abort-on-container-exit --build"
   },
   "cacheDirectories": [
     "node_modules"
