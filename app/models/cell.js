@@ -6,6 +6,8 @@ module.exports = (sequelize, DataTypes) => {
       isMine: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       minesNear: { type: DataTypes.BIGINT, allowNull: false },
       value: { type: DataTypes.STRING, allowNull: false },
+      x: { type: DataTypes.BIGINT, allowNull: false },
+      y: { type: DataTypes.BIGINT, allowNull: false },
       createdAt: { type: DataTypes.DATE, allowNull: false },
       updatedAt: { type: DataTypes.DATE, allowNull: false },
       deletedAt: DataTypes.DATE
