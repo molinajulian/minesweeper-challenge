@@ -37,7 +37,9 @@ const config = {
       port: process.env.PORT
     },
     session: {
-      header_name: 'authorization'
+      headerName: process.env.SESSION_HEADER_NAME || 'authorization',
+      expirationValue: process.env.SESSION_EXPIRATION_VALUE || 3600,
+      secretKey: process.env.SESSION_SECRET_KEY
     },
     server: {
       hashingSalts: process.env.HASHING_SALTS || 10
