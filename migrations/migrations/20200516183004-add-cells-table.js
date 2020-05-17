@@ -28,7 +28,7 @@ module.exports = {
         defaultValue: false
       },
       mines_near: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       value: {

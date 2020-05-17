@@ -18,11 +18,11 @@ module.exports = {
         allowNull: false
       },
       height: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       width: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       created_at: {

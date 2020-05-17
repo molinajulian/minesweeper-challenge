@@ -4,11 +4,11 @@ module.exports = {
   up: (queryInterface, Sequelize) =>
     Promise.all([
       queryInterface.addColumn('cells', 'x', {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false
       }),
       queryInterface.addColumn('cells', 'y', {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false
       })
     ]),
