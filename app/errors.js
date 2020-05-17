@@ -23,3 +23,7 @@ exports.notFoundError = message => internalError(message, exports.NOT_FOUND);
 
 exports.INVALID_CREDENTIALS = 'invalid_credentials';
 exports.invalidCredentialsError = message => internalError(message, exports.INVALID_CREDENTIALS);
+
+exports.UNAUTHORIZED = 'unauthorized';
+exports.unauthorized = () =>
+  internalError('The provided user is not authorized for access to the resource', exports.UNAUTHORIZED);

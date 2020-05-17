@@ -12,7 +12,8 @@ const statusCodes = {
   [errors.ALREADY_EXIST_ERROR]: 400,
   [errors.INVALID_PARAMS]: 409,
   [errors.NOT_FOUND]: 404,
-  [errors.INVALID_CREDENTIALS]: 400
+  [errors.INVALID_CREDENTIALS]: 400,
+  [errors.UNAUTHORIZED]: 401
 };
 
 exports.handle = (error, req, res, next) => {
