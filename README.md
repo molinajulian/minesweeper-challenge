@@ -16,5 +16,5 @@ Please, before running the command, check ports `8080` and` 5432` because they w
 
  ## Test
  
-They will executing in a docker container. You have to run `npm run testing`. 
+They will executing in a docker container. You have to run `npm run docker-test`. 
 The container (in foreground) will be run the tests and finally will be stopped.
