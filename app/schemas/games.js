@@ -53,7 +53,7 @@ exports.playGameSchema = {
   flag: {
     in: ['body'],
     custom: {
-      options: value => isNull(value) || (value && VALID_FLAGS.includes(value.toLowerCase()))
+      options: value => isNull(value) || (value && Object.values(VALID_FLAGS).includes(value.toLowerCase()))
     },
     optional: true,
     errorMessage: FLAG
