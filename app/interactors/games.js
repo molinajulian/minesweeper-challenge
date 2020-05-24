@@ -36,7 +36,7 @@ exports.playGame = ({ gameId, x, y, flag }) =>
     if (game.width < x || game.height < y) throw invalidCoordinatesError();
     if (flag || isNull(flag)) {
       const sortedValues = Object.values(
-        groupBy(sortBy(game.cells, ['dataValues.x', 'dataValues.y']), 'dataValues.x')
+        groupBy(sortBy(game.cells, ['dataValues.y', 'dataValues.x']), 'dataValues.y')
       );
       const values = sortedValues.map(row =>
         row.map(({ dataValues }) => {
@@ -52,7 +52,7 @@ exports.playGame = ({ gameId, x, y, flag }) =>
     }
     return discoverCell({ x: x - 1, y: y - 1, game, flag }).then(
       ({ lost, cellIdsToUpdate, selectedCell, values }) => {
-        const cellValues = Object.values(groupBy(sortBy(values, ['x', 'y']), 'x')).map(row =>
+        const cellValues = Object.values(groupBy(sortBy(values, ['y', 'x']), 'y')).map(row =>
           row.map(({ value }) => value)
         );
         if (lost) {

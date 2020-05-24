@@ -13,8 +13,8 @@ exports.getCellsPopulated = game => {
   );
   logger.info('Cells generated successfully');
   logger.info('Populating cells');
-  const cellsToCreate = cells.map((column, xPosition) =>
-    column.map((value, yPosition) => {
+  const cellsToCreate = cells.map((column, yPosition) =>
+    column.map((value, xPosition) => {
       const isMine = mines.some(minePosition => isSamePosition(minePosition, { x: xPosition, y: yPosition }));
       const minesNear = getMinesNear({ xPosition, yPosition, mines, height: game.height, width: game.width });
       return { isMine, minesNear, x: xPosition, y: yPosition, visible: false, gameId: game.id };
