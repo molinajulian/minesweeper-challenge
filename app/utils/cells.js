@@ -1,3 +1,5 @@
+const { uniq, partition } = require('lodash');
+
 exports.getRandomPositions = (xMax, yMax, array) => {
   const proposedPosition = { x: Math.ceil(Math.random() * xMax) - 1, y: Math.ceil(Math.random() * yMax) - 1 };
   if (array.some(position => exports.isSamePosition(position, proposedPosition))) {
@@ -51,37 +53,42 @@ exports.getCellByPosition = ({ cells, x, y }) =>
   cells.find(({ dataValues }) => exports.isSamePosition(dataValues, { x, y }));
 
 const discoverNearCells = ({ positions, cells, selectedCell, height, width, acumulator }) => {
-  const cellIdsToUpdate = [...acumulator, ...(positions ? positions.map(({ id }) => id) : [])];
-  let existMinesNear = false;
+  let cellIdsToUpdate = [...acumulator, ...(positions ? positions.map(({ id }) => id) : [])];
   let futureCellsToCheck = [];
   positions.forEach(position => {
-    const nearPositions = exports.getNearPositionsByCoordinates({
-      x: position.x,
-      y: position.y,
-      maxX: height,
-      maxY: width
-    });
-    if (nearPositions && nearPositions.length) {
-      const modelsOfNearPositions = cells.filter(({ dataValues }) =>
-        nearPositions.some(mineNear => exports.isSamePosition(mineNear, { x: dataValues.x, y: dataValues.y }))
-      );
-      const minesToCheck = modelsOfNearPositions.filter(
-        nearPosition =>
-          !exports.isSamePosition(selectedCell, nearPosition) &&
-          !positions.some(positionToCheck => exports.isSamePosition(positionToCheck, nearPosition))
-      );
-      if (exports.checkMinesExistence(minesToCheck)) existMinesNear = true;
-      futureCellsToCheck = [...futureCellsToCheck, ...minesToCheck];
+    if (!position.dataValues.minesNear) {
+      const nearPositions = exports.getNearPositionsByCoordinates({
+        x: position.x,
+        y: position.y,
+        maxX: height,
+        maxY: width
+      });
+      if (nearPositions && nearPositions.length) {
+        const modelsOfNearPositions = cells.filter(({ dataValues }) =>
+          nearPositions.some(mineNear =>
+            exports.isSamePosition(mineNear, { x: dataValues.x, y: dataValues.y })
+          )
+        );
+        const minesToCheck = modelsOfNearPositions.filter(
+          nearPosition =>
+            !exports.isSamePosition(selectedCell, nearPosition) &&
+            !positions.some(positionToCheck => exports.isSamePosition(positionToCheck, nearPosition)) &&
+            !cellIdsToUpdate.includes(nearPosition.dataValues.id)
+        );
+        const partitionsByMines = partition(minesToCheck, cell => cell.dataValues.minesNear === 0);
+        cellIdsToUpdate = [...cellIdsToUpdate, ...partitionsByMines[1].map(cell => cell.dataValues.id)];
+        futureCellsToCheck = uniq([...futureCellsToCheck, ...partitionsByMines[0]]);
+      }
     }
   });
-  if (existMinesNear) return cellIdsToUpdate;
+  if (!futureCellsToCheck.length) return cellIdsToUpdate;
   return discoverNearCells({
-    positions: futureCellsToCheck,
+    positions: uniq(futureCellsToCheck),
     cells,
     height,
     width,
     selectedCell,
-    acumulator: cellIdsToUpdate
+    acumulator: uniq(cellIdsToUpdate)
   });
 };
 
@@ -103,7 +110,7 @@ exports.discoverCell = ({ x, y, game: { cells, dataValues: gameDataValues } }) =
   const cellsToCheckMines = cells.filter(({ dataValues }) =>
     minesNear.some(mineNear => exports.isSamePosition(mineNear, { x: dataValues.x, y: dataValues.y }))
   );
-  if (exports.checkMinesExistence(cellsToCheckMines)) {
+  if (selectedCell.dataValues.minesNear) {
     return Promise.resolve({
       lost: false,
       selectedCell,

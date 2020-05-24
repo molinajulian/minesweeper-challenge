@@ -52,7 +52,7 @@ exports.bulkUpdateCells = async (cellIds, selectedCell, flag) => {
 
 exports.updateCell = ({ options, data }) => {
   logger.info('Attempting to update cell with data', data);
-  return Cell.update(data, { where: options  }).catch(error => {
+  return Cell.update(data, { where: options }).catch(error => {
     logger.error('Error updating the cell, reason:', error);
     throw databaseError(error.message);
   });
