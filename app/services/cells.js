@@ -1,46 +1,7 @@
 const logger = require('../logger');
-const {
-  Cell,
-  sequelize: { fn }
-} = require('../models');
+const { Cell, sequelize } = require('../models');
 const { databaseError } = require('../errors');
-
-const isSamePosition = (firstPosition, secondPosition) =>
-  firstPosition.x === secondPosition.x && firstPosition.y === secondPosition.y;
-
-const getRandomPositions = (xMax, yMax, array) => {
-  const proposedPosition = { x: Math.ceil(Math.random() * xMax) - 1, y: Math.ceil(Math.random() * yMax) - 1 };
-  if (array.some(position => isSamePosition(position, proposedPosition))) {
-    return getRandomPositions(xMax, yMax, array);
-  }
-  return proposedPosition;
-};
-
-const getMines = (amount, height, width) => {
-  const arrayOfMines = [];
-  Array.from(Array(amount).keys()).forEach(() => {
-    arrayOfMines.push(getRandomPositions(width, height, arrayOfMines));
-  });
-  return arrayOfMines;
-};
-
-const getMinesNear = (xPosition, yPosition, mines) => {
-  const positionsAround = [
-    { x: xPosition - 1, y: yPosition + 1 },
-    { x: xPosition - 1, y: yPosition },
-    { x: xPosition - 1, y: yPosition - 1 },
-    { x: xPosition, y: yPosition - 1 },
-    { x: xPosition, y: yPosition + 1 },
-    { x: xPosition + 1, y: yPosition + 1 },
-    { x: xPosition + 1, y: yPosition },
-    { x: xPosition + 1, y: yPosition - 1 }
-  ];
-  const validPositionsAround = positionsAround.filter(({ x, y }) => x >= 0 && y >= 0);
-  const amountMinesNear = validPositionsAround.filter(positionNear =>
-    mines.some(minePosition => isSamePosition(positionNear, minePosition))
-  );
-  return (amountMinesNear && amountMinesNear.length) || 0;
-};
+const { getMines, isSamePosition, getMinesNear } = require('../utils/cells');
 
 exports.getCellsPopulated = game => {
   logger.info('Obtaining coordinates for mines');
@@ -55,7 +16,7 @@ exports.getCellsPopulated = game => {
   const cellsToCreate = cells.map((column, xPosition) =>
     column.map((value, yPosition) => {
       const isMine = mines.some(minePosition => isSamePosition(minePosition, { x: xPosition, y: yPosition }));
-      const minesNear = getMinesNear(xPosition, yPosition, mines);
+      const minesNear = getMinesNear({ xPosition, yPosition, mines, height: game.height, width: game.width });
       return { isMine, minesNear, x: xPosition, y: yPosition, visible: false, gameId: game.id };
     })
   );
@@ -67,9 +28,32 @@ exports.bulkCreateCells = (cells, options) => {
   logger.info('Attempting to create multiple cells');
   const cellsToCreate = cells
     .reduce((previous, current) => previous.concat(current), [])
-    .map(cell => ({ ...cell, createdAt: fn('NOW'), updatedAt: fn('NOW') }));
+    .map(cell => ({ ...cell, createdAt: sequelize.fn('NOW'), updatedAt: sequelize.fn('NOW') }));
   return Cell.bulkCreate(cellsToCreate, options).catch(error => {
     logger.error('Error creating multiple cells, reason:', error);
     databaseError(error.message);
+  });
+};
+
+exports.bulkUpdateCells = async (cellIds, selectedCell, flag) => {
+  const transaction = await sequelize.transaction();
+  const cellsToUpdate =
+    (cellIds && cellIds.map(id => Cell.update({ visible: true }, { where: { id }, transaction }))) || [];
+  try {
+    selectedCell.update({ visible: true, flag }, { transaction });
+    await Promise.all(cellsToUpdate);
+    transaction.commit();
+  } catch (e) {
+    logger.error(e);
+    transaction.rollback();
+    throw databaseError(`Error updating the cells,reason: ${e.message}`);
+  }
+};
+
+exports.updateCell = ({ options, data }) => {
+  logger.info('Attempting to update cell with data', data);
+  return Cell.update(data, { where: options  }).catch(error => {
+    logger.error('Error updating the cell, reason:', error);
+    throw databaseError(error.message);
   });
 };

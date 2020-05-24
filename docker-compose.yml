@@ -30,8 +30,6 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PORT=5432
       - POSTGRES_DB=minesweeper_db_dev
-    ports:
-      - "5432:5432"
     networks:
       - minesweeper-dev
 

@@ -27,3 +27,7 @@ exports.invalidCredentialsError = message => internalError(message, exports.INVA
 exports.UNAUTHORIZED = 'unauthorized';
 exports.unauthorized = () =>
   internalError('The provided user is not authorized for access to the resource', exports.UNAUTHORIZED);
+
+exports.INVALID_COORDINATES = 'invalid_coordinates';
+exports.invalidCoordinatesError = () =>
+  internalError('The provided coordinates are invalid', exports.INVALID_COORDINATES);

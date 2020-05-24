@@ -13,7 +13,8 @@ const statusCodes = {
   [errors.INVALID_PARAMS]: 409,
   [errors.NOT_FOUND]: 404,
   [errors.INVALID_CREDENTIALS]: 400,
-  [errors.UNAUTHORIZED]: 401
+  [errors.UNAUTHORIZED]: 401,
+  [errors.INVALID_COORDINATES]: 400
 };
 
 exports.handle = (error, req, res, next) => {

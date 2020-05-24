@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     { timestamps: true, underscored: true, paranoid: true, tableName: 'cells' }
   );
   Cell.associate = ({ Game }) => {
-    Cell.hasOne(Game, { as: 'game', foreignKey: 'gameId' });
+    Cell.belongsTo(Game, { as: 'game', foreignKey: 'gameId' });
   };
   return Cell;
 };
