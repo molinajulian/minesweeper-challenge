@@ -12,7 +12,7 @@ services:
       - DB_HOST=minesweeper-db-dev
       - DB_PORT=5432
       - DB_PASSWORD=admin
-      - DB_USER=admin
+      - DB_USERNAME=admin
       - SESSION_SECRET_KEY=1aff451968bc0695638b119bc1c5a9bd261c90c833464ecb5def42c89c32a14ed8f63940baea1b30a9204bdd659431e3e5c8a14a19a8fe32ca279ac430675e93
     command: sh -c "/wait && npm run migrate-and-start"
     depends_on:
