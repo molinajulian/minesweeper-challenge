@@ -37,22 +37,28 @@ exports.createGame = async gameData => {
   }
 };
 
-const updateFlag = ({ game, flag, x, y, transaction }) => {
+const getValuesWhenIsFlag = ({ cells, x, y, flag }) => {
   const sortedValues = Object.values(
-    groupBy(sortBy(game.cells, ['dataValues.y', 'dataValues.x']), 'dataValues.y')
+    groupBy(sortBy(cells, ['dataValues.y', 'dataValues.x']), 'dataValues.y')
   );
-  const values = sortedValues.map(row =>
+  return sortedValues.map(row =>
     row.map(({ dataValues }) => {
       const samePosition = isSamePosition(dataValues, { x: x - 1, y: y - 1 });
       if (samePosition) return flag;
       return dataValues.visible ? dataValues.value || dataValues.minesNear : null;
     })
   );
-  return updateCell({
+};
+
+const updateFlag = ({ game, flag, x, y, transaction }) =>
+  updateCell({
     data: { visible: true, value: flag },
     options: { where: { id: getCellByPosition({ cells: game.cells, x: x - 1, y: y - 1 }).id }, transaction }
-  }).then(() => ({ values, lost: false, game: game.dataValues }));
-};
+  }).then(() => ({
+    values: getValuesWhenIsFlag({ x, y, flag, cells: game.cells }),
+    lost: false,
+    game: game.dataValues
+  }));
 
 const getLostCellValues = values =>
   Object.values(groupBy(sortBy(values, ['y', 'x']), 'y')).map(row =>
@@ -68,14 +74,15 @@ const getNormalCellValues = values =>
     row.map(({ value, visible, minesNear }) => (visible ? value || minesNear : value))
   );
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity,max-statements
 exports.playGame = async ({ gameId, x, y, flag }) => {
   let transaction = undefined;
   try {
     const game = await findGameWithCellsBy({ id: gameId });
     if (game.width < x || game.height < y) throw invalidCoordinatesError();
     transaction = await sequelize.transaction();
-    if (flag || isNull(flag)) {
+    const isValidFlag = flag || isNull(flag);
+    if (isValidFlag) {
       const { values, game: gameDataValues } = await updateFlag({ game, flag, x, y, transaction });
       transaction.commit();
       const { won, values: finallyValues } = await checkAndUpdateGameWasWon(game);
@@ -104,10 +111,23 @@ exports.playGame = async ({ gameId, x, y, flag }) => {
     }
     const cellValues = getNormalCellValues(values);
     if (!cellIdsToUpdate) {
-      await updateCell({ data: { visible: true }, options: { where: { id: selectedCell.id }, transaction } });
+      const valueToUpdate = isValidFlag ? { value: flag } : { value: selectedCell.value };
+      await updateCell({
+        data: { visible: true, ...valueToUpdate },
+        options: { where: { id: selectedCell.id }, transaction }
+      });
       transaction.commit();
       const { won, values: finallyValues } = await checkAndUpdateGameWasWon(game);
-      return { values: finallyValues || cellValues, lost, game: game.dataValues, won };
+      const isOrContainFlag = isValidFlag || selectedCell.value;
+      return {
+        values:
+          finallyValues || !isOrContainFlag
+            ? finallyValues || cellValues
+            : getValuesWhenIsFlag({ x, y, flag: flag || selectedCell.value, cells: game.cells }),
+        lost,
+        game: game.dataValues,
+        won
+      };
     }
     await bulkUpdateCells({ cellIdsToUpdate, selectedCell, flag, transaction });
     transaction.commit();
@@ -119,52 +139,3 @@ exports.playGame = async ({ gameId, x, y, flag }) => {
     throw internalServerError(error.message);
   }
 };
-
-// exports.playGame = ({ gameId, x, y, flag }) =>
-//   findGameWithCellsBy({ id: gameId }).then(game => {
-//     if (!game) throw notFoundError('The provided game was not found');
-//     if (game.width < x || game.height < y) throw invalidCoordinatesError();
-//     if (flag || isNull(flag)) {
-//       return updateFlag({ game, flag, x, y }).then(({ values, game: gameDataValues }) =>
-//         checkAndUpdateGameWasWon(game).then(({ won, values: finallyValues }) => ({
-//           values: finallyValues || values,
-//           game: gameDataValues,
-//           lost: false,
-//           won
-//         }))
-//       );
-//     }
-//     return discoverCell({ x: x - 1, y: y - 1, game, flag }).then(
-//       ({ lost, cellIdsToUpdate, selectedCell, values }) => {
-//         if (lost) {
-//           return updateGame({ options: { id: game.id }, data: { state: FINISHED } }).then(() => {
-//             const cellValuesWithMines = Object.values(groupBy(sortBy(values, ['y', 'x']), 'y')).map(row =>
-//               row.map(({ value, visible, minesNear, isMine }) => {
-//                 const discoveredMine = isMine && value === EXCLAMATION_MARK;
-//                 if (discoveredMine) return value;
-//                 return isMine && !visible ? MINE_NOT_FOUND_FLAG : minesNear;
-//               })
-//             );
-//             return {
-//               values: cellValuesWithMines,
-//               lost,
-//               game: game.dataValues
-//             };
-//           });
-//         }
-//         const cellValues = Object.values(groupBy(sortBy(values, ['y', 'x']), 'y')).map(row =>
-//           row.map(({ value, visible, minesNear }) => (visible ? minesNear : value))
-//         );
-//         if (!cellIdsToUpdate) {
-//           return updateCell({ data: { visible: true }, options: { id: selectedCell.id } }).then(() =>
-//             checkAndUpdateGameWasWon(game).then(({ won, values: finallyValues }) => ({
-//               values: finallyValues || cellValues,
-//               lost,
-//               game: game.dataValues,
-//               won
-//             }))
-//           );
-//         }
-//       }
-//     );
-//   });

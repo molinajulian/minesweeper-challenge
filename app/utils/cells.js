@@ -103,6 +103,7 @@ exports.discoverCell = ({ x, y, game: { cells, dataValues: gameDataValues } }) =
     isMine: dataValues.isMine
   }));
   const selectedCell = cells.find(({ dataValues }) => exports.isSamePosition({ x, y }, dataValues));
+  if (selectedCell.value) return Promise.resolve({ values: cellUserValues, lost: false, selectedCell });
   if (selectedCell.isMine) return Promise.resolve({ values: cellUserValues, lost: true, selectedCell });
   const minesNear = exports.getNearPositionsByCoordinates({
     x,

@@ -8,6 +8,7 @@ const {
   VALID_FLAGS: { EXCLAMATION_MARK },
   MINE_NOT_FOUND_FLAG
 } = require('../constants');
+const { isSamePosition } = require('../utils/cells');
 
 exports.createGame = (gameData, options) => {
   logger.info('Attempting to create game with data', gameData);
@@ -57,10 +58,12 @@ exports.checkAndUpdateGameWasWon = game =>
     let finallyCellValues = undefined;
     if (gameWasWon && !discoveredAllCells) {
       finallyCellValues = Object.values(groupBy(sortBy(gameReloaded.cells, ['y', 'x']), 'y')).map(row =>
-        row.map(({ value, visible, minesNear, isMine }) => {
+        row.map(({ value, minesNear, isMine, x, y }) => {
           const discoveredMine = isMine && value === EXCLAMATION_MARK;
           if (discoveredMine) return value;
-          return isMine && !visible ? MINE_NOT_FOUND_FLAG : minesNear;
+          return minesNotDiscovered.some(cell => isSamePosition(cell.dataValues, { x, y }))
+            ? MINE_NOT_FOUND_FLAG
+            : minesNear;
         })
       );
     }
