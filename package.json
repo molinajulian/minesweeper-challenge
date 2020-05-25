@@ -17,7 +17,7 @@
     "test": "NODE_ENV=testing jest --runInBand --detectOpenHandles --forceExit --colors",
     "migrate-and-start": "npm run migrations && npm run start",
     "migrate-and-test": "npm run migrations && npm run test",
-    "docker-start": "docker-compose up -d --build",
+    "docker-start": "docker-compose up --build",
     "docker-test": "docker-compose -f docker-compose-testing.yml up --abort-on-container-exit --build"
   },
   "cacheDirectories": [
