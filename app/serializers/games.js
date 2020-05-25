@@ -1,6 +1,6 @@
 const Datetime = require('luxon').DateTime;
 
-exports.playGameSerializer = ({ game, values, lost }) => {
+exports.playGameSerializer = ({ game, values, lost = false, won = false }) => {
   const time = Datetime.local()
     .diff(Datetime.fromMillis(game.createdAt.valueOf()))
     .toFormat('hh mm ss');
@@ -8,7 +8,8 @@ exports.playGameSerializer = ({ game, values, lost }) => {
   const timeFormatted = `${timeSplitted[0]} hours, ${timeSplitted[1]} minutes and ${timeSplitted[2]} seconds`;
   return {
     values,
-    lost,
-    time: lost ? timeFormatted : undefined
+    lost: won ? undefined : lost,
+    time: lost || won ? timeFormatted : undefined,
+    win: won && !lost ? won : undefined
   };
 };

@@ -1,4 +1,3 @@
-const { isString } = require('validator');
 const { isNull } = require('lodash');
 
 const { HEIGHT, WEIGHT, MINES_AMOUNT, X_POSITION, Y_POSITION, GAME_ID, FLAG } = require('./errors_message');
@@ -34,20 +33,20 @@ exports.createGameSchema = {
 exports.playGameSchema = {
   x: {
     in: ['body'],
-    isInt: true,
-    toInt: { options: { min: 1, max: 9223372036854775807 } },
+    isInt: { options: { min: 1, max: 9223372036854775807 } },
+    toInt: true,
     errorMessage: X_POSITION
   },
   y: {
     in: ['body'],
-    isInt: true,
-    toInt: { options: { min: 1, max: 9223372036854775807 } },
+    isInt: { options: { min: 1, max: 9223372036854775807 } },
+    toInt: true,
     errorMessage: Y_POSITION
   },
   gameId: {
     in: ['params'],
-    isInt: true,
-    toInt: { options: { min: 1, max: 9223372036854775807 } },
+    isInt: { options: { min: 1, max: 9223372036854775807 } },
+    toInt: true,
     errorMessage: GAME_ID
   },
   flag: {

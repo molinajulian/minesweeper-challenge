@@ -73,7 +73,8 @@ const discoverNearCells = ({ positions, cells, selectedCell, height, width, acum
           nearPosition =>
             !exports.isSamePosition(selectedCell, nearPosition) &&
             !positions.some(positionToCheck => exports.isSamePosition(positionToCheck, nearPosition)) &&
-            !cellIdsToUpdate.includes(nearPosition.dataValues.id)
+            !cellIdsToUpdate.includes(nearPosition.dataValues.id) &&
+            !nearPosition.dataValues.isMine
         );
         const partitionsByMines = partition(minesToCheck, cell => cell.dataValues.minesNear === 0);
         cellIdsToUpdate = [...cellIdsToUpdate, ...partitionsByMines[1].map(cell => cell.dataValues.id)];
@@ -96,8 +97,10 @@ exports.discoverCell = ({ x, y, game: { cells, dataValues: gameDataValues } }) =
   const cellUserValues = cells.map(({ dataValues }) => ({
     x: dataValues.x + 1,
     y: dataValues.y + 1,
-    value: dataValues.flag || dataValues.minesNear,
-    visible: dataValues.visible
+    value: dataValues.value || dataValues.minesNear,
+    visible: dataValues.visible,
+    minesNear: dataValues.minesNear,
+    isMine: dataValues.isMine
   }));
   const selectedCell = cells.find(({ dataValues }) => exports.isSamePosition({ x, y }, dataValues));
   if (selectedCell.isMine) return Promise.resolve({ values: cellUserValues, lost: true, selectedCell });
@@ -132,9 +135,11 @@ exports.discoverCell = ({ x, y, game: { cells, dataValues: gameDataValues } }) =
   const actualCellUserValues = cells.map(cell => ({
     x: cell.x + 1,
     y: cell.y + 1,
+    visible: cell.visible,
+    minesNear: cell.minesNear,
     value: cellIdsToUpdate.includes(cell.dataValues.id)
-      ? cell.dataValues.flag || cell.dataValues.minesNear
-      : cell.dataValues.flag || cell.dataValues.value
+      ? cell.dataValues.value || cell.dataValues.minesNear
+      : cell.dataValues.value
   }));
   return Promise.resolve({
     lost: false,
