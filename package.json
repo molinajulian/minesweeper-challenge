@@ -37,7 +37,7 @@
     "bluebird": "^3.7.2",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "express-validator": "^6.4.1",
     "express-wolox-logger": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
