@@ -42,7 +42,7 @@
     "express-wolox-logger": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
-    "luxon": "^1.24.1",
+    "luxon": "^1.28.1",
     "pg": "^7.4.1",
     "sequelize": "^5.21.5",
     "swagger-ui-express": "^4.0.7",
